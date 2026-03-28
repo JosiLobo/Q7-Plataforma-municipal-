@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAuth } from '@/_core/hooks/useAuth';
 import Sidebar from '@/components/Sidebar';
 import Topbar from '@/components/Topbar';
 import StatCard from '@/components/StatCard';
@@ -63,6 +64,11 @@ const protocolosRecentes = [
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [commandOpen, setCommandOpen] = useState(false);
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
+  }
 
   return (
     <div className="flex bg-background min-h-screen">
