@@ -1,19 +1,20 @@
 # Q7Gov — Plataforma Municipal de Gestão Digital
 
-**Versão:** 2.4 Enterprise (React 19 + TypeScript + Tailwind 4 + tRPC + WhatsApp + Métricas)
+**Versão:** 2.5 Enterprise (React 19 + TypeScript + Tailwind 4 + tRPC + WhatsApp + Sentimentos + Métricas)
 
-Plataforma enterprise de gestão municipal com **integração WhatsApp Business API**, **IA para triagem automática**, **fila de mensagens com Redis**, **webhooks seguros com HMAC**, **notificações em tempo real com WebSockets** e **relatórios exportáveis em PDF/Excel**. Pronta para venda para prefeituras.
+Plataforma enterprise de gestão municipal com **integração WhatsApp Business API**, **IA para triagem automática**, **análise de sentimento com IA**, **fila de mensagens com Redis**, **webhooks seguros com HMAC**, **notificações em tempo real com WebSockets** e **relatórios exportáveis em PDF/Excel**. Pronta para venda para prefeituras.
 
 ---
 
 ## 🎯 Visão Geral
 
-O Q7Gov é uma solução completa de transformação digital para municípios. Gerencia **22+ secretarias**, cidadãos, processos e documentos com **IA assistiva**, **transparência total**, **atendimento 24/7 via WhatsApp** e **zero burocracia**.
+O Q7Gov é uma solução completa de transformação digital para municípios. Gerencia **22+ secretarias**, cidadãos, processos e documentos com **IA assistiva**, **transparência total**, **atendimento 24/7 via WhatsApp** e **monitoramento de satisfação em tempo real**.
 
 ### Diferenciais
 
 - **Dashboard Inteligente** — KPIs em tempo real, alertas preditivos, análise de tendências
 - **WhatsApp Business API** — Atendimento automático com IA e triagem inteligente
+- **Análise de Sentimento com IA** — Monitoramento de satisfação do cidadão em tempo real
 - **Fila de Mensagens** — Processamento assincronamente com Bull + Redis
 - **Webhooks Seguros** — Validação HMAC para requisições WhatsApp
 - **Notificações em Tempo Real** — WebSockets para atualizações instantâneas
@@ -27,66 +28,54 @@ O Q7Gov é uma solução completa de transformação digital para municípios. G
 
 ---
 
-## 🚀 Começar Rápido
+## 🚀 Começar Rápido (Setup Local)
 
 ### Pré-requisitos
 
-- **Node.js** 18+ e **pnpm** 10+
-- **MySQL** 8+ ou **TiDB**
-- **Redis** (para fila de mensagens)
+Antes de começar, certifique-se de ter instalado:
 
-### Instalação
+- **Node.js** 18+ — [Download](https://nodejs.org/)
+- **pnpm** 10+ — `npm install -g pnpm`
+- **MySQL** 8+ — [Download](https://www.mysql.com/downloads/)
+- **Redis** — [Download](https://redis.io/download) ou use Docker
+
+### 1️⃣ Clonar o Repositório
 
 ```bash
-# 1. Clonar repositório
 git clone https://github.com/framil09/Q7-Plataforma-municipal-.git
 cd Q7-Plataforma-municipal-
-
-# 2. Instalar dependências
-pnpm install
-
-# 3. Configurar variáveis de ambiente (ver seção abaixo)
-# Criar arquivo .env.local
-
-# 4. Configurar banco de dados
-pnpm db:push
-
-# 5. Iniciar Redis (em outro terminal)
-redis-server
-
-# 6. Rodar em desenvolvimento
-pnpm dev
-
-# 7. Build para produção
-pnpm build
-pnpm start
 ```
 
-O servidor estará disponível em `http://localhost:3000`
+### 2️⃣ Instalar Dependências
 
-### Acesso
+```bash
+pnpm install
+```
 
-- **Landing Page:** `http://localhost:3000/`
-- **Dashboard:** `http://localhost:3000/app`
-- **WhatsApp:** `http://localhost:3000/app/whatsapp`
-- **IA Insights:** `http://localhost:3000/app/ai`
-- **Métricas:** `http://localhost:3000/app/metrics`
+### 3️⃣ Criar Banco de Dados MySQL
 
----
+```bash
+# Conectar ao MySQL
+mysql -u root -p
 
-## 🔧 Configuração de Ambiente
+# Executar no MySQL
+CREATE DATABASE q7gov CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+EXIT;
+```
 
-Crie um arquivo `.env.local` na raiz do projeto:
+### 4️⃣ Configurar Variáveis de Ambiente
+
+Crie um arquivo `.env.local` na raiz do projeto com o seguinte conteúdo:
 
 ```env
 # ========== BANCO DE DADOS ==========
-DATABASE_URL="mysql://user:password@localhost:3306/q7gov"
+DATABASE_URL="mysql://root:sua_senha@localhost:3306/q7gov"
 
 # ========== OAUTH (MANUS) ==========
 VITE_APP_ID="seu-app-id"
 OAUTH_SERVER_URL="https://api.manus.im"
 VITE_OAUTH_PORTAL_URL="https://login.manus.im"
-JWT_SECRET="seu-jwt-secret-aleatorio-32-caracteres"
+JWT_SECRET="seu-jwt-secret-aleatorio-32-caracteres-minimo"
 
 # ========== WHATSAPP BUSINESS API ==========
 WHATSAPP_PHONE_NUMBER_ID="seu-phone-number-id"
@@ -105,15 +94,46 @@ VITE_ANALYTICS_ENDPOINT="https://analytics.example.com"
 VITE_ANALYTICS_WEBSITE_ID="your-id"
 ```
 
-### Obter Credenciais WhatsApp
+**Nota:** Para desenvolvimento local, você pode usar valores fictícios para as credenciais do WhatsApp. Elas serão necessárias apenas em produção.
 
-1. Acesse [Meta Developers](https://developers.facebook.com)
-2. Crie uma aplicação
-3. Configure **WhatsApp Business Platform**
-4. Obtenha:
-   - **Phone Number ID** — ID do número de telefone
-   - **Access Token** — Token de acesso da API
-   - **Webhook Secret** — Chave para validar webhooks
+### 5️⃣ Iniciar Redis
+
+Em um terminal separado:
+
+```bash
+# Opção 1: Se instalado localmente
+redis-server
+
+# Opção 2: Com Docker
+docker run -d -p 6379:6379 --name redis redis:latest
+```
+
+### 6️⃣ Aplicar Migrações do Banco de Dados
+
+```bash
+pnpm db:push
+```
+
+### 7️⃣ Iniciar o Servidor de Desenvolvimento
+
+```bash
+pnpm dev
+```
+
+O servidor estará disponível em `http://localhost:3000`
+
+---
+
+## 📍 Acessar a Aplicação
+
+| Página | URL |
+|--------|-----|
+| **Landing Page** | http://localhost:3000/ |
+| **Dashboard** | http://localhost:3000/app |
+| **WhatsApp** | http://localhost:3000/app/whatsapp |
+| **Sentimentos** | http://localhost:3000/app/sentiment |
+| **IA Insights** | http://localhost:3000/app/ai |
+| **Métricas** | http://localhost:3000/app/metrics |
 
 ---
 
@@ -126,6 +146,7 @@ q7gov-modern/
 │   │   ├── pages/
 │   │   │   ├── Home.tsx             # Dashboard principal
 │   │   │   ├── WhatsAppDashboard.tsx # Gerenciador WhatsApp
+│   │   │   ├── SentimentDashboard.tsx # Análise de sentimentos
 │   │   │   ├── MetricsDashboard.tsx  # Painel de métricas
 │   │   │   ├── AIInsights.tsx        # IA e resumos
 │   │   │   └── Landing.tsx           # Landing page
@@ -133,6 +154,7 @@ q7gov-modern/
 │   │   │   ├── Sidebar.tsx           # Navegação
 │   │   │   ├── Topbar.tsx            # Header
 │   │   │   ├── ReportExporter.tsx    # Exportação de relatórios
+│   │   │   ├── NegativeSentimentAlert.tsx # Alertas interativos
 │   │   │   └── ...outros componentes
 │   │   ├── lib/trpc.ts               # Cliente tRPC
 │   │   └── App.tsx                   # Roteamento
@@ -140,19 +162,23 @@ q7gov-modern/
 ├── server/                           # Backend Express + tRPC
 │   ├── routers.ts                    # Rotas principais
 │   ├── whatsapp-router.ts            # Rotas WhatsApp
+│   ├── sentiment-router.ts           # Rotas de sentimentos
 │   ├── metrics-router.ts             # Rotas de Métricas
 │   ├── reports-router.ts             # Rotas de Relatórios
 │   ├── whatsapp-api.ts               # Integração WhatsApp
 │   ├── whatsapp-ai.ts                # IA para triagem
+│   ├── sentiment-analysis.ts         # Análise de sentimento com IA
 │   ├── message-queue.ts              # Fila de mensagens (Bull)
 │   ├── webhook-security.ts           # Validação HMAC
 │   ├── websocket-server.ts           # WebSockets
 │   ├── reports.ts                    # Geração de relatórios
+│   ├── sentiment-db.ts               # Helpers de sentimentos
 │   ├── metrics-db.ts                 # Helpers de métricas
 │   └── db.ts                         # Helpers de banco de dados
 ├── drizzle/                          # Migrações e schema
 │   ├── schema.ts                     # Definição de tabelas
 │   ├── schema-metrics.ts             # Tabelas de métricas
+│   ├── schema-sentiment.ts           # Tabelas de sentimentos
 │   └── migrations/                   # Arquivos de migração
 └── package.json
 ```
@@ -178,59 +204,17 @@ q7gov-modern/
 - **Histórico de Conversas** — Rastreamento completo
 - **Status de Entrega** — Confirmação de leitura
 
-**Endpoints:**
-- `POST /api/trpc/whatsapp.webhook` — Receber mensagens
-- `POST /api/trpc/whatsapp.sendMessage` — Enviar mensagem
-- `GET /api/trpc/whatsapp.getConversations` — Listar conversas
-- `GET /api/trpc/whatsapp.getHistory` — Histórico de conversa
+### 3. Análise de Sentimentos (`/app/sentiment`)
 
-### 3. Fila de Mensagens (Bull + Redis)
+- **Classificação Automática** — Positivo, Neutro, Negativo
+- **Emoções Detectadas** — Joy, Sadness, Anger, Fear, Surprise, Disgust
+- **Keywords Extraídas** — Palavras-chave indicadoras de sentimento
+- **Distribuição de Sentimentos** — Gráfico pizza com percentuais
+- **Tendência de Satisfação** — Gráfico linha dos últimos 7 dias
+- **Alertas Interativos** — Revisar/Resolver mensagens insatisfeitas
+- **Taxa de Satisfação** — Percentual de mensagens positivas
 
-Processamento assincronamente com 3 filas:
-
-- **message-queue** — Receber e processar mensagens
-- **response-queue** — Gerar e enviar respostas
-- **metrics-queue** — Calcular e armazenar métricas
-
-**Benefícios:**
-- Processamento não-bloqueante
-- Retry automático em caso de falha
-- Escalabilidade horizontal
-- Monitoramento de jobs
-
-### 4. Webhooks Seguros (HMAC)
-
-Validação de assinatura em todas as requisições WhatsApp:
-
-```typescript
-// Header: X-Hub-Signature-256: sha256=<hash>
-validateWebhookSignature(payload, signature);
-```
-
-**Segurança:**
-- HMAC-SHA256
-- Timing-safe comparison
-- Proteção contra replay attacks
-
-### 5. Notificações em Tempo Real (WebSockets)
-
-Atualizações instantâneas com Socket.io:
-
-- **Novas mensagens** — Atualização em tempo real
-- **Mudanças de status** — Conversa atualizada
-- **Métricas** — Dashboard atualizado
-- **Notificações** — Alertas para o usuário
-
-**Eventos:**
-- `new-message` — Nova mensagem recebida
-- `status-update` — Status da conversa alterado
-- `metric-update` — Métrica calculada
-- `dashboard-update` — Dashboard atualizado
-- `notification` — Notificação geral
-
-### 6. Painel de Métricas (`/app/metrics`)
-
-Análise completa de atendimento:
+### 4. Painel de Métricas (`/app/metrics`)
 
 - **KPIs do Dia** — Mensagens, respostas, tempo médio, escalações
 - **Gráficos de Tendência** — Últimos 7 dias
@@ -238,32 +222,49 @@ Análise completa de atendimento:
 - **Satisfação Média** — Avaliação dos cidadãos (0-5)
 - **Exportação** — PDF, Excel, ambos
 
-**Endpoints:**
-- `GET /api/trpc/metrics.getDashboard` — Dashboard resumido
-- `GET /api/trpc/metrics.getLast7Days` — Últimos 7 dias
-- `GET /api/trpc/metrics.getMonth` — Estatísticas do mês
-- `GET /api/trpc/metrics.getByUrgency` — Métricas por urgência
+### 5. IA Insights (`/app/ai`)
 
-### 7. Relatórios Exportáveis
+- **Resumo Executivo** — Análise automática da situação
+- **Alertas Preditivos** — Previsão de gargalos e oportunidades
+- **Recomendações** — Próximas ações sugeridas
 
-Gere relatórios em PDF e Excel com um clique:
+---
 
-**PDF:**
-- Cabeçalho com período
-- Resumo executivo
-- Estatísticas diárias
-- Rodapé com data de geração
+## 🔌 API Endpoints (tRPC)
 
-**Excel:**
-- Aba "Resumo" com KPIs
-- Aba "Estatísticas Diárias" com dados tabulados
-- Formatação profissional
-- Pronto para análise
+### WhatsApp
+```
+POST   /api/trpc/whatsapp.webhook          # Receber mensagens
+POST   /api/trpc/whatsapp.sendMessage      # Enviar mensagem
+GET    /api/trpc/whatsapp.getConversations # Listar conversas
+GET    /api/trpc/whatsapp.getHistory       # Histórico de conversa
+```
 
-**Endpoints:**
-- `POST /api/trpc/reports.generatePDF` — Gerar PDF
-- `POST /api/trpc/reports.generateExcel` — Gerar Excel
-- `POST /api/trpc/reports.generateComplete` — Gerar ambos
+### Sentimentos
+```
+GET    /api/trpc/sentiment.getDashboard    # Dashboard resumido
+GET    /api/trpc/sentiment.getLast7Days    # Últimos 7 dias
+GET    /api/trpc/sentiment.getMonth        # Estatísticas do mês
+GET    /api/trpc/sentiment.getDistribution # Distribuição de sentimentos
+GET    /api/trpc/sentiment.getPendingAlerts # Alertas pendentes
+POST   /api/trpc/sentiment.markAlertAsReviewed # Marcar como revisado
+POST   /api/trpc/sentiment.resolveAlert    # Resolver alerta
+```
+
+### Métricas
+```
+GET    /api/trpc/metrics.getDashboard      # Dashboard resumido
+GET    /api/trpc/metrics.getLast7Days      # Últimos 7 dias
+GET    /api/trpc/metrics.getMonth          # Estatísticas do mês
+GET    /api/trpc/metrics.getByUrgency      # Métricas por urgência
+```
+
+### Relatórios
+```
+POST   /api/trpc/reports.generatePDF       # Gerar PDF
+POST   /api/trpc/reports.generateExcel     # Gerar Excel
+POST   /api/trpc/reports.generateComplete  # Gerar ambos
+```
 
 ---
 
@@ -284,10 +285,6 @@ Gere relatórios em PDF e Excel com um clique:
 - **Dados:** Space Mono (monospace)
 - **Hierarquia:** H1 (28px), H2 (18px), Body (13px), Label (11px)
 
-### Componentes
-
-Todos os componentes usam **Tailwind 4** + **shadcn/ui** para consistência.
-
 ---
 
 ## 📊 Stack Técnico
@@ -303,9 +300,9 @@ Todos os componentes usam **Tailwind 4** + **shadcn/ui** para consistência.
 | **Banco de Dados** | MySQL/TiDB + Drizzle ORM |
 | **Fila de Mensagens** | Bull + Redis |
 | **WebSockets** | Socket.io |
+| **IA** | LLM API (Manus) |
 | **Relatórios** | PDFKit + ExcelJS |
 | **Build** | Vite |
-| **Deploy** | Manus, AWS, Railway, Render |
 
 ---
 
@@ -319,15 +316,6 @@ Todos os componentes usam **Tailwind 4** + **shadcn/ui** para consistência.
 - ✅ **HMAC-SHA256** — Validação de webhooks
 - ✅ **JWT** — Autenticação segura
 - ✅ **OAuth 2.0** — Integração com Manus
-
----
-
-## 📱 Responsividade
-
-- ✅ **Mobile First** — Otimizado para celular
-- ✅ **Tablet** — Layout adaptativo
-- ✅ **Desktop** — Experiência completa
-- ✅ **Offline** — PWA com manifest.json
 
 ---
 
@@ -346,30 +334,14 @@ pnpm test:watch
 
 ---
 
-## 🚢 Deploy
+## 🚢 Build para Produção
 
-### Manus (Recomendado)
+```bash
+# Build frontend + backend
+pnpm build
 
-Clique em "Publish" no Management UI após criar um checkpoint.
-
-### Alternativas
-
-- **Railway** — `railway link`
-- **Render** — Conectar repositório GitHub
-- **Vercel** — Frontend apenas
-- **Docker** — Criar imagem customizada
-
-### Variáveis de Ambiente (Produção)
-
-Adicionar ao seu provedor de hosting:
-
-```env
-DATABASE_URL=mysql://...
-WHATSAPP_PHONE_NUMBER_ID=...
-WHATSAPP_ACCESS_TOKEN=...
-WHATSAPP_WEBHOOK_SECRET=...
-REDIS_URL=redis://...
-JWT_SECRET=...
+# Iniciar servidor de produção
+pnpm start
 ```
 
 ---
@@ -380,10 +352,13 @@ JWT_SECRET=...
 
 ```bash
 # Verificar conexão MySQL
-mysql -u user -p -h localhost
+mysql -u root -p -h localhost
+
+# Verificar se o banco existe
+SHOW DATABASES;
 
 # Criar banco se não existir
-CREATE DATABASE q7gov;
+CREATE DATABASE q7gov CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 # Aplicar migrações
 pnpm db:push
@@ -392,11 +367,14 @@ pnpm db:push
 ### Erro: "Redis connection refused"
 
 ```bash
+# Verificar se Redis está rodando
+redis-cli ping
+
 # Iniciar Redis
 redis-server
 
 # Ou com Docker
-docker run -d -p 6379:6379 redis:latest
+docker run -d -p 6379:6379 --name redis redis:latest
 ```
 
 ### Erro: "Webhook signature validation failed"
@@ -413,22 +391,38 @@ pnpm install
 
 # Limpar cache
 pnpm store prune
+
+# Reiniciar servidor
+pnpm dev
+```
+
+### Erro: "Port 3000 already in use"
+
+```bash
+# Encontrar processo usando porta 3000
+lsof -i :3000
+
+# Matar processo
+kill -9 <PID>
+
+# Ou usar porta diferente
+PORT=3001 pnpm dev
 ```
 
 ---
 
 ## 📈 Roadmap
 
-### v2.5 (Próximo)
+### v2.6 (Próximo)
 - [ ] Dashboard personalizável (drag-and-drop)
 - [ ] Autenticação OAuth com prefeituras
 - [ ] Integração com Google Maps
 
 ### v3.0
 - [ ] Machine Learning para previsões
-- [ ] Análise de sentimento em mensagens
 - [ ] Chatbot com GPT-4
 - [ ] Integração com ERP municipal
+- [ ] Mobile app nativo (React Native)
 
 ---
 
@@ -437,7 +431,7 @@ pnpm store prune
 | Plano | Preço | Secretarias | Recursos |
 |-------|-------|------------|----------|
 | **Starter** | R$ 2.990/mês | Até 5 | Dashboard básico, Portal |
-| **Professional** | R$ 8.990/mês | Até 15 | IA, Alertas, Exportação, WhatsApp |
+| **Professional** | R$ 8.990/mês | Até 15 | IA, Alertas, Exportação, WhatsApp, Sentimentos |
 | **Enterprise** | Customizado | 22+ | Integração, SLA 99.9%, Suporte 24/7 |
 
 ---
@@ -448,6 +442,7 @@ pnpm store prune
 - **Chat:** Disponível no app
 - **Documentação:** https://docs.q7gov.com
 - **Status:** https://status.q7gov.com
+- **GitHub Issues:** https://github.com/framil09/Q7-Plataforma-municipal-/issues
 
 ---
 
@@ -474,23 +469,56 @@ Desenvolvido com ❤️ pela **QodeSeven** para transformar a gestão pública m
 
 ## 📝 Changelog
 
-### v2.4 (Atual)
-- ✅ Integração WhatsApp Business API
-- ✅ Fila de mensagens com Bull + Redis
-- ✅ Webhooks seguros com HMAC
+### v2.5 (Atual)
+- ✅ Análise de Sentimento com IA (LLM)
+- ✅ Dashboard de Sentimentos com gráficos
+- ✅ Alertas Interativos de Insatisfação
+- ✅ Integração automática no processamento de mensagens
+- ✅ Métricas de satisfação por dia/mês
+
+### v2.4
+- ✅ Webhooks seguros com HMAC-SHA256
 - ✅ Notificações em tempo real com WebSockets
-- ✅ Painel de métricas avançado
 - ✅ Relatórios exportáveis em PDF/Excel
 
 ### v2.3
+- ✅ Integração WhatsApp Business API
+- ✅ Fila de mensagens com Bull + Redis
+- ✅ Painel de métricas avançado
+
+### v2.1
 - ✅ Dashboard inteligente
 - ✅ IA para triagem automática
 - ✅ Busca global com Command Palette
 - ✅ Mapas interativos
 - ✅ Modo escuro
 
-### v2.1
-- ✅ Landing page de vendas
-- ✅ 22 secretarias suportadas
-- ✅ Design system corporativo
-- ✅ Mobile first
+---
+
+## 🎓 Documentação Adicional
+
+- [tRPC Docs](https://trpc.io)
+- [Drizzle ORM](https://orm.drizzle.team)
+- [Bull Queue](https://github.com/OptimalBits/bull)
+- [Socket.io](https://socket.io)
+- [Recharts](https://recharts.org)
+
+---
+
+## ❓ FAQ
+
+**P: Posso usar o Q7Gov sem WhatsApp?**
+R: Sim! O WhatsApp é opcional. Você pode usar apenas o Dashboard e Portal do Cidadão.
+
+**P: Qual é o limite de secretarias?**
+R: O sistema suporta até 22+ secretarias. Você pode adicionar mais customizando o banco de dados.
+
+**P: Como faço para integrar com meu ERP?**
+R: O Q7Gov fornece APIs tRPC que podem ser consumidas por qualquer sistema. Consulte a documentação de API.
+
+**P: O sistema é escalável?**
+R: Sim! Usa Redis para cache, Bull para fila distribuída e MySQL com índices otimizados.
+
+---
+
+**Desenvolvido com ❤️ para prefeituras municipais**
