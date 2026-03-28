@@ -4,6 +4,7 @@ import Topbar from '@/components/Topbar';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, MessageSquare, Clock, AlertTriangle, CheckCircle, Zap } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
+import ReportExporter from '@/components/ReportExporter';
 
 export default function MetricsDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -68,6 +69,11 @@ export default function MetricsDashboard() {
         />
 
         <div className="p-6 max-w-7xl mx-auto">
+          {/* Export Section */}
+          <div className="mb-8 flex justify-end">
+            <ReportExporter />
+          </div>
+
           {/* KPIs Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {kpis.map((kpi, idx) => {
