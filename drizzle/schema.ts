@@ -81,3 +81,7 @@ export const aiResponses = mysqlTable("ai_responses", {
 
 export type AiResponse = typeof aiResponses.$inferSelect;
 export type InsertAiResponse = typeof aiResponses.$inferInsert;
+
+// Re-export metrics tables
+export { whatsappMetrics, dailyStats } from './schema-metrics';
+export type { WhatsappMetric, InsertWhatsappMetric, DailyStat, InsertDailyStat } from './schema-metrics';

@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import AIInsights from "./pages/AIInsights";
 import Landing from "./pages/Landing";
 import WhatsAppDashboard from "./pages/WhatsAppDashboard";
+import MetricsDashboard from "./pages/MetricsDashboard";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/app" component={Home} />
       <Route path="/app/ai" component={AIInsights} />
       <Route path="/app/whatsapp" component={WhatsAppDashboard} />
+      <Route path="/app/metrics" component={MetricsDashboard} />
       <Route path="/" component={Landing} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
