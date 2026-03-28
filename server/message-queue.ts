@@ -2,6 +2,9 @@ import Queue from 'bull';
 import { triageMessage, generatePersonalizedResponse, detectUrgency } from './whatsapp-ai';
 import { sendWhatsAppMessage, markMessageAsRead } from './whatsapp-api';
 import { getOrCreateConversation, saveMessage, saveAiResponse, updateConversationStatus } from './whatsapp';
+import { analyzeSentiment, shouldAlert } from './sentiment-analysis';
+import { saveSentiment, createNegativeAlert, updateDaySentimentSummary, calculateDaySentimentSummary } from './sentiment-db';
+import { emitNotification } from './websocket-server';
 
 // Configurar Redis
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
@@ -35,6 +38,39 @@ messageQueue.process(async (job) => {
     // 3. Triagem com IA
     const urgency = await detectUrgency(content);
     const triage = await triageMessage(content);
+
+    // 3.5. Análise de Sentimento
+    const sentiment = await analyzeSentiment(content);
+    await saveSentiment({
+      messageId: savedMessage.id,
+      conversationId: conversation.id,
+      sentiment: sentiment.sentiment,
+      confidence: sentiment.confidence.toString(),
+      score: sentiment.score.toString(),
+      emotions: JSON.stringify(sentiment.emotions),
+      keywords: JSON.stringify(sentiment.keywords),
+      summary: sentiment.summary,
+      requiresReview: sentiment.requiresReview ? 1 : 0,
+    });
+
+    // Criar alerta se sentimento negativo com alta confiança
+    if (shouldAlert(sentiment)) {
+      await createNegativeAlert({
+        messageId: savedMessage.id,
+        conversationId: conversation.id,
+        sentiment: 'negative',
+        confidence: sentiment.confidence.toString(),
+        message: content,
+        status: 'pending',
+      });
+
+      // Emitir notificação
+      emitNotification(
+        '⚠️ Sentimento Negativo Detectado',
+        `Mensagem de ${citizenName} com sentimento negativo (confiança: ${(sentiment.confidence * 100).toFixed(0)}%)`,
+        'warning'
+      );
+    }
 
     // 4. Gerar resposta
     const response = await generatePersonalizedResponse(

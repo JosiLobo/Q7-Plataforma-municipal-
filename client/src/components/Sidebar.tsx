@@ -18,6 +18,7 @@ interface SidebarProps {
 const SECRETARIAS: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: '📊', active: true },
   { id: 'whatsapp', label: 'WhatsApp', icon: '💬', badge: 5 },
+  { id: 'sentiment', label: 'Sentimentos', icon: '😊' },
   { id: 'ai', label: 'IA Insights', icon: '🤖' },
   { id: 'metrics', label: 'Métricas', icon: '📈' },
   { id: 'saude', label: 'Saúde', icon: '🏥', badge: 3 },

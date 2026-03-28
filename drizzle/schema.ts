@@ -85,3 +85,7 @@ export type InsertAiResponse = typeof aiResponses.$inferInsert;
 // Re-export metrics tables
 export { whatsappMetrics, dailyStats } from './schema-metrics';
 export type { WhatsappMetric, InsertWhatsappMetric, DailyStat, InsertDailyStat } from './schema-metrics';
+
+// Re-export sentiment tables
+export { messageSentiments, sentimentSummary, negativeAlerts } from './schema-sentiment';
+export type { MessageSentiment, InsertMessageSentiment, SentimentSummary, InsertSentimentSummary, NegativeAlert, InsertNegativeAlert } from './schema-sentiment';
