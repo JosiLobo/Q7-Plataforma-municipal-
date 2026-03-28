@@ -1,0 +1,19 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Sync com upstream
+        uses: peter-evans/sync-with-upstream@v3
+        with:
+          upstream_repository: DONO_ORIGINAL/REPO_ORIGINAL
+          upstream_branch: main
+          branch: main
+          token: ${{ secrets.GITHUB_TOKEN }}
